@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">你的天气先生</string>
+    <string name="china">中国</string>
+    <string name="fail">加载失败</string>
+    <string name="loading">正在加载...</string>
+    <string name="today">今天</string>
+    <string name="publish">发布</string>
+    <string name="choose">切换城市</string>
+    <string name="citymanager">城市管理</string>
+    <string name="setting">设置</string>
+    <string name="auto_update">后台自动更新天气</string>
+    <string name="exit">退出</string>
+    <string name="twohours">2小时</string>
+    <string name="fourhours">4小时</string>
+    <string name="eighthours">8小时</string>
+    <string name="sunDay">晴</string>
+    <string name="rainLessDay">小雨</string>
+    <string name="ranCenterDay">中雨</string>
+    <string name="cloudyMore">阴</string>
+    <string name="cloudLess">多云</string>
+</resources>
