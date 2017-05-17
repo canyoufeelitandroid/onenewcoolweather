@@ -10,6 +10,8 @@ import com.example.weather.coolweather.model.City;
 import com.example.weather.coolweather.model.County;
 import com.example.weather.coolweather.model.Province;
 import com.example.weather.coolweather.model.WeatherItem;
+import com.example.weather.coolweather.model.gsonofweather.Weather;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -151,23 +153,39 @@ public class Utility {
 //    }
 
     /**
-     * 解析服务器返回的天气JSON数据，并将解析出的数据存储到本地
+     * 解析服务器返回的天气JSON数据，并将解析成Weather实体类
      */
-    public static void handleWeatherResponse(Context context,String response){
+
+    public static Weather handleWeatherResponse(String response){
         try{
             JSONObject jsonObject=new JSONObject(response);
-            JSONObject weatherInfo=jsonObject.getJSONObject("weatherinfo");
-            String cityName=weatherInfo.getString("city");
-            String weatherCode=weatherInfo.getString("cityid");
-            String temp1=weatherInfo.getString("temp1");
-            String temp2=weatherInfo.getString("temp2");
-            String weatherDesp=weatherInfo.getString("weather");
-            String publishTime=weatherInfo.getString("ptime");
-            saveWeatherInfo(context,cityName,weatherCode,temp1,temp2,weatherDesp,publishTime);
+            JSONArray jsonArray=jsonObject.getJSONArray("weather");
+            String weatherContent=jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent,Weather.class);
         }catch (Exception e){
             e.printStackTrace();
         }
+        return null;
     }
+
+    /**
+     * 解析服务器返回的天气JSON数据，并将解析出的数据存储到本地
+     */
+//    public static void handleWeatherResponse(Context context,String response){
+//        try{
+//            JSONObject jsonObject=new JSONObject(response);
+//            JSONObject weatherInfo=jsonObject.getJSONObject("weatherinfo");
+//            String cityName=weatherInfo.getString("city");
+//            String weatherCode=weatherInfo.getString("cityid");
+//            String temp1=weatherInfo.getString("temp1");
+//            String temp2=weatherInfo.getString("temp2");
+//            String weatherDesp=weatherInfo.getString("weather");
+//            String publishTime=weatherInfo.getString("ptime");
+//            saveWeatherInfo(context,cityName,weatherCode,temp1,temp2,weatherDesp,publishTime);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//    }
 
     /**
      * 将服务器返回的天气数据存储到SharedPreferences文件中(及城市管理数据库)

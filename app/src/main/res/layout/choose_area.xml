@@ -3,6 +3,8 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!--this is new layout-->
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"

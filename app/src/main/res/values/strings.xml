@@ -18,4 +18,9 @@
     <string name="ranCenterDay">中雨</string>
     <string name="cloudyMore">阴</string>
     <string name="cloudLess">多云</string>
+    <string name="forecast_weather">预告</string>
+    <string name="air_quality">空气质量</string>
+    <string name="air_num">AQI指数</string>
+    <string name="pm25_num">PM2.5指数</string>
+    <string name="lift_suggestion">生活建议</string>
 </resources>
