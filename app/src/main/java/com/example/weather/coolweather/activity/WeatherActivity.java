@@ -1,16 +1,21 @@
 package com.example.weather.coolweather.activity;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.weather.coolweather.R;
 import com.example.weather.coolweather.model.gsonofweather.Forecast;
 import com.example.weather.coolweather.model.gsonofweather.Weather;
@@ -42,8 +47,9 @@ public class WeatherActivity extends BaseActivity {
 //
 //    //自定义下拉菜单初始化
 //    private TitlePopup titlePopup;
-//    //记录第一次按下返回的时间（毫秒）
-//    long firstTime=0;
+    //记录第一次按下返回的时间（毫秒）
+    long firstTime=0;
+
     private ScrollView weatherLayout;
     private TextView titleCity;
     private TextView titleUpdateTime;
@@ -56,11 +62,13 @@ public class WeatherActivity extends BaseActivity {
     private TextView carWashText;
     private TextView sportText;
 
+    private ImageView picImg;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.weather_layout);
+        setContentView(R.layout.activity_weather);
         initUI();
         SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString=prefs.getString("weather",null);
@@ -74,6 +82,13 @@ public class WeatherActivity extends BaseActivity {
             weatherLayout.setVisibility(View.INVISIBLE);
             //ccfb286742e249c0a354d1eeb531bef0
             requestWeather(weatherId);
+        }
+        //加载背景图片
+        String bingPic=prefs.getString("bing_pic",null);
+        if(bingPic!=null){
+            Glide.with(WeatherActivity.this).load(bingPic).into(picImg);
+        }else{
+            loadBingPic();
         }
 //        String countyCode=getIntent().getStringExtra("county_code");
 //        String weatherCode=getIntent().getStringExtra("weather_code");
@@ -117,7 +132,7 @@ public class WeatherActivity extends BaseActivity {
 //            }
 //        });
 //
-        weatherLayout=(ScrollView) findViewById(R.id.weather_layout);
+        weatherLayout=(ScrollView)findViewById(R.id.weather_layout_scrollview);
         titleCity=(TextView)findViewById(R.id.title_city);
         titleUpdateTime=(TextView)findViewById(R.id.title_update_time);
         degreeText=(TextView)findViewById(R.id.degree_text);
@@ -128,6 +143,8 @@ public class WeatherActivity extends BaseActivity {
         comfortText=(TextView) findViewById(R.id.comfort_text);
         carWashText=(TextView) findViewById(R.id.car_wash_text);
         sportText=(TextView)findViewById(R.id.sport_text);
+
+        picImg=(ImageView)findViewById(R.id.pic_img);
     }
 
 //    private void queryWeatherCode(String countyCode){
@@ -163,21 +180,25 @@ public class WeatherActivity extends BaseActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 final String responseText=response.body().string();
                 final Weather weather=Utility.handleWeatherResponse(responseText);
+                Log.i("data","weather.status is "+weather.status);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(weather!=null&"ok".equals(weather.status)){
+                        if(weather!=null && "ok".equals(weather.status)){
                             SharedPreferences.Editor editor=PreferenceManager.
                                     getDefaultSharedPreferences(WeatherActivity.this).edit();
                             editor.putString("weather",responseText);
                             editor.apply();
                             showWeatherInfo(weather);
+                        }else{
+                            Toast.makeText(WeatherActivity.this,"获取天气信息失败",Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
 
             }
         });
+        loadBingPic();
     }
 
 //    private  void queryFromServer(final String address,final String type){
@@ -230,17 +251,18 @@ public class WeatherActivity extends BaseActivity {
 
         forecastLayout.removeAllViews();
         for(Forecast forecast:weather.forecastList){
-            View view= LayoutInflater.from(WeatherActivity.this).
+            View view= LayoutInflater.from(this).
                     inflate(R.layout.forecast_item,forecastLayout,false);
-            TextView dateText=(TextView)findViewById(R.id.date_text);
-            TextView infoText=(TextView)findViewById(R.id.info_text);
-            TextView maxText=(TextView)findViewById(R.id.max_text);
-            TextView minText=(TextView)findViewById(R.id.min_text);
+            TextView dateText=(TextView)view.findViewById(R.id.date_text);
+            TextView infoText=(TextView)view.findViewById(R.id.info_text);
+            TextView maxText=(TextView)view.findViewById(R.id.max_text);
+            TextView minText=(TextView)view.findViewById(R.id.min_text);
             dateText.setText(forecast.date);
             infoText.setText(forecast.more.info);
-            maxText.setText(forecast.tempearture.max);
-            minText.setText(forecast.tempearture.min);
+            maxText.setText(forecast.temperature.max+"℃");
+            minText.setText(forecast.temperature.min+"℃");
             forecastLayout.addView(view);
+        }
             if(weather.aqi!=null){
                 aqiText.setText(weather.aqi.city.aqi);
                 pm25Text.setText(weather.aqi.city.pm25);
@@ -254,7 +276,6 @@ public class WeatherActivity extends BaseActivity {
             sportText.setText(sport);
             weatherLayout.setVisibility(View.VISIBLE);
 
-        }
 
 
 //        String desp_weather=prefs.getString("weather_desp","");
@@ -315,23 +336,52 @@ public class WeatherActivity extends BaseActivity {
 //    }
 
     /**
+     * 加载每日背景图片
+     */
+    private void loadBingPic(){
+        String requestBingPic="http://guolin.tech/api/bing_pic";
+        HttpUtil.sendOkHttpRequest(requestBingPic, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String bingPic=response.body().string();
+                SharedPreferences.Editor editor=PreferenceManager.
+                        getDefaultSharedPreferences(WeatherActivity.this).edit();
+                editor.putString("bing_pic",bingPic);
+                editor.apply();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(WeatherActivity.this).load(bingPic).into(picImg);
+                    }
+                });
+
+            }
+        });
+    }
+
+    /**
      * 双击退出程序
      */
-//    @Override
-//    public boolean onKeyUp(int keyCode, KeyEvent event) {
-//        if(keyCode==KeyEvent.KEYCODE_BACK){
-//            long secondTime=System.currentTimeMillis();
-//            if(secondTime-firstTime>800){//如果两次按键时间间隔大于800毫秒，则不退出
-//                Toast toast=Toast.makeText(WeatherActivity.this,"再按一次退出程序",Toast.LENGTH_SHORT);
-//                toast.getView().setBackgroundColor(Color.parseColor("#FFCC00"));
-//
-//                toast.show();
-//                firstTime=secondTime;
-//                return true;
-//            }else{
-//                System.exit(0);
-//            }
-//        }
-//        return super.onKeyUp(keyCode, event);
-//    }
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if(keyCode==KeyEvent.KEYCODE_BACK){
+            long secondTime=System.currentTimeMillis();
+            if(secondTime-firstTime>800){//如果两次按键时间间隔大于800毫秒，则不退出
+                Toast toast=Toast.makeText(WeatherActivity.this,"再按一次退出程序",Toast.LENGTH_SHORT);
+                toast.getView().setBackgroundColor(Color.parseColor("#FFCC00"));
+
+                toast.show();
+                firstTime=secondTime;
+                return true;
+            }else{
+                System.exit(0);
+            }
+        }
+        return super.onKeyUp(keyCode, event);
+    }
 }

@@ -43,14 +43,14 @@ public class ChooseActivity extends Fragment {
     public static final int LEVEL_CITY=1;
     public static final int LEVEL_COUNTY=2;
 
-    private boolean isFromWeatherActivity;
+//    private boolean isFromWeatherActivity;
 
     private ProgressDialog progressDialog;
     private TextView titleText;
     private ListView lv;
     private ArrayAdapter<String> adapter;
     //private CoolWeatherDB db;
-    private List<String> dataList=new ArrayList<String>();
+    private List<String> dataList=new ArrayList<>();
     private Button backButton;
 
     /**
@@ -87,7 +87,7 @@ public class ChooseActivity extends Fragment {
         backButton=(Button)view.findViewById(R.id.back_button);
         lv=(ListView)view.findViewById(R.id.lv);
         titleText=(TextView)view.findViewById(R.id.title_text);
-        adapter=new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,dataList);
+        adapter=new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1,dataList);
         lv.setAdapter(adapter);
         return view;
     }
@@ -241,7 +241,8 @@ public class ChooseActivity extends Fragment {
         }else{
             int provinceCode=selectedProvince.getProvinceCode();
             int cityCode=selectedCity.getCityCode();
-            String address="http://guolin.tech/china/"+provinceCode+"/"+cityCode;
+            Log.i("data","province is "+provinceCode+" and city is" +cityCode);
+            String address="http://guolin.tech/api/china/"+provinceCode+"/"+cityCode;
             queryFromServer(address,"county");
         }
     }

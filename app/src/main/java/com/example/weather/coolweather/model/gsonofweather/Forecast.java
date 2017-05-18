@@ -11,7 +11,7 @@ public class Forecast {
     public String date;
 
     @SerializedName("tmp")
-    public Temperature tempearture;
+    public Temperature temperature;
 
     @SerializedName("cond")
     public More more;

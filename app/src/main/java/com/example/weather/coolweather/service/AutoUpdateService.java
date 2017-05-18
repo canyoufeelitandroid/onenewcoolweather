@@ -11,9 +11,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.example.weather.coolweather.receiver.AutoUpdateReceiver;
-import com.example.weather.coolweather.util.HttpCallbackListener;
-import com.example.weather.coolweather.util.HttpUtil;
-import com.example.weather.coolweather.util.Utility;
 
 /**
  * Created by 64088 on 2017/3/18.
@@ -62,16 +59,16 @@ public class AutoUpdateService extends Service {
         Log.i("data","更新天气一次");
         String weatherCode=prfs.getString("weather_code","");
         String address="http://www.weather.com.cn/data/cityinfo/"+weatherCode+".html";
-        HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
-            @Override
-            public void onFinish(String response) {
-                Utility.handleWeatherResponse(AutoUpdateService.this,response);
-            }
-
-            @Override
-            public void onError(Exception e) {
-                e.printStackTrace();
-            }
-        });
+//        HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
+//            @Override
+//            public void onFinish(String response) {
+//                Utility.handleWeatherResponse(AutoUpdateService.this,response);
+//            }
+//
+//            @Override
+//            public void onError(Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
     }
 }
