@@ -3,6 +3,14 @@
     android:layout_width="match_parent" android:layout_height="50dp">
 
     <!--this is new layout-->
+    <Button
+        android:id="@+id/nav_button"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="10dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/own_home"/>
 
    <TextView
        android:id="@+id/title_city"

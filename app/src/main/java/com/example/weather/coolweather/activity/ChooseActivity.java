@@ -105,12 +105,24 @@ public class ChooseActivity extends Fragment {
                     selectedCity=cityList.get(i);
                     queryCounty();
                 }else if(currentLevel==LEVEL_COUNTY){
-                    String weatherId=countyList.get(i).getWeatherId();
-                    Log.i("data","weatherId is "+weatherId);
-                    Intent intent=new Intent(getActivity(),WeatherActivity.class);
-                    intent.putExtra("weather_id",weatherId);
-                    startActivity(intent);
-                    getActivity().finish();
+                    String weatherId = countyList.get(i).getWeatherId();
+                    Log.i("data", "weatherId is " + weatherId);
+                    if(getActivity() instanceof  MyMainActivity) {
+                        //碎片在MyMainActivity中
+
+                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        intent.putExtra("weather_id", weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }else if(getActivity() instanceof  WeatherActivity){
+                        //碎片在WeatherActivity中
+                        WeatherActivity activity=(WeatherActivity)getActivity();
+                        activity.drawerLayout.closeDrawers();
+                        activity.swipeRefresh.setRefreshing(true);
+                        activity.requestWeather(weatherId);
+
+
+                    }
                 }
             }
         });

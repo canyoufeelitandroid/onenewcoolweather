@@ -4,11 +4,15 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -63,6 +67,9 @@ public class WeatherActivity extends BaseActivity {
     private TextView sportText;
 
     private ImageView picImg;
+    public SwipeRefreshLayout swipeRefresh;
+    public DrawerLayout drawerLayout;
+    private Button navBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,17 +79,27 @@ public class WeatherActivity extends BaseActivity {
         initUI();
         SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString=prefs.getString("weather",null);
+        final String weatherId;
         if(weatherString!=null){
             //有缓存时直接解析天气数据
             Weather weather=Utility.handleWeatherResponse(weatherString);
+            weatherId=weather.basic.weatherId;
             showWeatherInfo(weather);
         }else{
             //无缓存时去服务器解析数据
-            String weatherId=getIntent().getStringExtra("weather_id");
+            weatherId=getIntent().getStringExtra("weather_id");
             weatherLayout.setVisibility(View.INVISIBLE);
             //ccfb286742e249c0a354d1eeb531bef0
             requestWeather(weatherId);
         }
+
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requestWeather(weatherId);
+            }
+        });
+
         //加载背景图片
         String bingPic=prefs.getString("bing_pic",null);
         if(bingPic!=null){
@@ -145,6 +162,20 @@ public class WeatherActivity extends BaseActivity {
         sportText=(TextView)findViewById(R.id.sport_text);
 
         picImg=(ImageView)findViewById(R.id.pic_img);
+        //下拉刷新
+        swipeRefresh=(SwipeRefreshLayout)findViewById(R.id.refresh_weather_layout);
+        //设置进度条颜色
+        swipeRefresh.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+
+        //左滑动菜单切换城市
+        drawerLayout=(DrawerLayout)findViewById(R.id.drawer_layout);
+        navBtn=(Button)findViewById(R.id.nav_button);
+        navBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
     }
 
 //    private void queryWeatherCode(String countyCode){
@@ -161,7 +192,7 @@ public class WeatherActivity extends BaseActivity {
      * 根据天气ID查询对应的天气信息
      */
 
-    private void requestWeather(final String weatherId){
+    public void requestWeather(final String weatherId){
         String weatherUrl="http://guolin.tech/api/weather?cityid="+weatherId+
                 "&key=ccfb286742e249c0a354d1eeb531bef0";
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
@@ -172,6 +203,7 @@ public class WeatherActivity extends BaseActivity {
                     @Override
                     public void run() {
                         Toast.makeText(WeatherActivity.this,"获取天气信息失败",Toast.LENGTH_SHORT).show();
+                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }
@@ -193,6 +225,7 @@ public class WeatherActivity extends BaseActivity {
                         }else{
                             Toast.makeText(WeatherActivity.this,"获取天气信息失败",Toast.LENGTH_SHORT).show();
                         }
+                        swipeRefresh.setRefreshing(false);
                     }
                 });
 
