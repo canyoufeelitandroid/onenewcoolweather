@@ -10,9 +10,17 @@
         <item name="android:layout_marginLeft">5dp</item>
         <item name="android:layout_marginRight">5dp</item>
         <item name="android:layout_marginBottom">10dp</item>
-        <item name="cardBackgroundColor">@color/colorAccent</item>
+        <item name="cardBackgroundColor">#ff4081</item>
         <item name="cardCornerRadius">6dp</item>
         <item name="cardElevation">2dp</item>
+    </style>
+
+    <style name="MySwitch" parent="Theme.AppCompat.Light">
+        <!-- switch 打开时的按钮的颜色 轨迹颜色默认为30%（看效果就明白30%是怎么回事了）这个颜色 -->
+        <item name="colorControlActivated">@android:color/holo_green_dark</item>
+        <item name="colorSwitchThumbNormal">#ff4081</item>
+        <item name="android:colorForeground">@color/colorPrimaryDark</item>
+        <item name="android:switchMinWidth">200dp</item>
     </style>
 
 </resources>

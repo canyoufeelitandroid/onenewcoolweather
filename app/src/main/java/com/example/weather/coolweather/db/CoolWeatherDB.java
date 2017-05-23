@@ -161,8 +161,7 @@ public class CoolWeatherDB {
             ContentValues values=new ContentValues();
             values.put("county_name",item.getCounty_name());
             values.put("weather_desp",item.getWeather_desp());
-            values.put("temp1",item.getTemp1());
-            values.put("temp2",item.getTemp2());
+            values.put("temp1",item.getTemp());
             values.put("publish_time",item.getTime());
             values.put("weather_code",item.getWeather_code());
             int count=db.update("City_Manager",values,"county_name=?",new String[]{countyName});
@@ -179,26 +178,26 @@ public class CoolWeatherDB {
     /**
      * 从数据库取出城市管理信息
      */
-    public List<WeatherItem> loadWeatherItem(){
-        List<WeatherItem> list=new ArrayList<WeatherItem>();
-        Cursor cursor=db.rawQuery("select * from City_Manager order by id desc",null);
-        if(cursor.moveToFirst()){
-            do {
-                String countyName=cursor.getString(cursor.getColumnIndex("county_name"));
-                String weatherDesp=cursor.getString(cursor.getColumnIndex("weather_desp"));
-                String temp1=cursor.getString(cursor.getColumnIndex("temp1"));
-                String temp2=cursor.getString(cursor.getColumnIndex("temp2"));
-                String publishTime=cursor.getString(cursor.getColumnIndex("publish_time"));
-                String weatherCode=cursor.getString(cursor.getColumnIndex("weather_code"));
-                WeatherItem item = new WeatherItem(countyName,weatherDesp,temp1,temp2,publishTime,weatherCode);
-                list.add(item);
-            }while (cursor.moveToNext());
-
-            if(cursor!=null){
-                cursor.close();
-            }
-        }
-        return list;
-    }
+//    public List<WeatherItem> loadWeatherItem(){
+//        List<WeatherItem> list=new ArrayList<WeatherItem>();
+//        Cursor cursor=db.rawQuery("select * from City_Manager order by id desc",null);
+//        if(cursor.moveToFirst()){
+//            do {
+//                String countyName=cursor.getString(cursor.getColumnIndex("county_name"));
+//                String weatherDesp=cursor.getString(cursor.getColumnIndex("weather_desp"));
+//                String temp1=cursor.getString(cursor.getColumnIndex("temp1"));
+//                String temp2=cursor.getString(cursor.getColumnIndex("temp2"));
+//                String publishTime=cursor.getString(cursor.getColumnIndex("publish_time"));
+//                String weatherCode=cursor.getString(cursor.getColumnIndex("weather_code"));
+//                WeatherItem item = new WeatherItem(countyName,weatherDesp,temp1,temp2,publishTime,weatherCode);
+//                list.add(item);
+//            }while (cursor.moveToNext());
+//
+//            if(cursor!=null){
+//                cursor.close();
+//            }
+//        }
+//        return list;
+//    }
 
 }

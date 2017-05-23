@@ -1,7 +1,9 @@
 package com.example.weather.coolweather.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -10,8 +12,9 @@ import android.widget.Button;
 
 import com.example.weather.coolweather.R;
 import com.example.weather.coolweather.adapter.CityManagerAdapter;
-import com.example.weather.coolweather.db.CoolWeatherDB;
 import com.example.weather.coolweather.model.WeatherItem;
+
+import org.litepal.crud.DataSupport;
 
 import java.util.List;
 
@@ -25,7 +28,7 @@ public class CityManagerActivity extends BaseActivity implements View.OnClickLis
     private CityManagerAdapter adapter;
     private Button addBtn;
     private Button backBtn;
-    private CoolWeatherDB db;
+    private SharedPreferences.Editor editor;
 
 
     @Override
@@ -33,7 +36,7 @@ public class CityManagerActivity extends BaseActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.city_manager);
-        db=CoolWeatherDB.getInstance(this);
+        editor= PreferenceManager.getDefaultSharedPreferences(this).edit();
         initData();
         initUI();
 
@@ -45,7 +48,9 @@ public class CityManagerActivity extends BaseActivity implements View.OnClickLis
                 WeatherItem item1=list.get(position);
                 String weatherCode=item1.getWeather_code();
                 Intent weatherIntent=new Intent(CityManagerActivity.this,WeatherActivity.class);
-                weatherIntent.putExtra("weather_code",weatherCode);
+                weatherIntent.putExtra("weather_id",weatherCode);
+                editor.putString("weather",null);
+                editor.apply();
                 startActivity(weatherIntent);
             }
 
@@ -55,7 +60,8 @@ public class CityManagerActivity extends BaseActivity implements View.OnClickLis
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        db.saveWeatherItem(item,false);
+//                        db.saveWeatherItem(item,false);
+                        DataSupport.deleteAll(WeatherItem.class,"weather_code=?",String.valueOf(item.getWeather_code()));
                     }
                 }).start();
                 adapter.removeItem(position);
@@ -67,7 +73,8 @@ public class CityManagerActivity extends BaseActivity implements View.OnClickLis
 
     }
     private  void initData(){
-        list=db.loadWeatherItem();
+//        list=db.loadWeatherItem();
+            list= DataSupport.findAll(WeatherItem.class);
     }
 
     private void initUI(){
@@ -83,7 +90,7 @@ public class CityManagerActivity extends BaseActivity implements View.OnClickLis
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.add_city_manager:
-                Intent intent=new Intent(CityManagerActivity.this,ChooseActivity.class);
+                Intent intent=new Intent(CityManagerActivity.this,MyMainActivity.class);
                 intent.putExtra("from_weather_activity",true);
                 startActivity(intent);
                 break;

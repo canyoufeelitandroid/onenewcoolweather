@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -19,7 +20,7 @@ import com.example.weather.coolweather.service.AutoUpdateService;
  * Created by 64088 on 2017/3/20.
  */
 
-public class SettingActivity extends BaseActivity implements View.OnClickListener{
+public class SettingActivity extends AppCompatActivity implements View.OnClickListener{
     private Switch aSwitch;
     private Spinner spinner;
     private Button exitBtn;
@@ -102,6 +103,7 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 break;
             case R.id.exit:
                 ActivityCollector.finishAll();
+                finish();
                 break;
         }
     }

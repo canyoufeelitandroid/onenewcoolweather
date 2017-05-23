@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,6 +23,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.weather.coolweather.R;
+import com.example.weather.coolweather.controls.TitlePopup;
+import com.example.weather.coolweather.model.ActionItem;
+import com.example.weather.coolweather.model.WeatherItem;
 import com.example.weather.coolweather.model.gsonofweather.Forecast;
 import com.example.weather.coolweather.model.gsonofweather.Weather;
 import com.example.weather.coolweather.service.AutoUpdateService;
@@ -38,7 +42,7 @@ import okhttp3.Response;
  * Created by 64088 on 2017/3/17.
  */
 
-public class WeatherActivity extends BaseActivity {
+public class WeatherActivity extends BaseActivity implements View.OnClickListener{
 //    private LinearLayout weatherInfoLayout;
 //    private RelativeLayout weatherLayout;
 //
@@ -52,7 +56,7 @@ public class WeatherActivity extends BaseActivity {
 //    private Button refreshWeatherBtn;
 //
 //    //自定义下拉菜单初始化
-//    private TitlePopup titlePopup;
+    private TitlePopup titlePopup;
     //记录第一次按下返回的时间（毫秒）
     long firstTime=0;
 
@@ -73,6 +77,8 @@ public class WeatherActivity extends BaseActivity {
     public DrawerLayout drawerLayout;
     private Button navBtn;
 
+    SharedPreferences prefs;
+
 
 
     @Override
@@ -81,13 +87,13 @@ public class WeatherActivity extends BaseActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_weather);
         initUI();
-        SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(this);
+        prefs=PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString=prefs.getString("weather",null);
+
 
         if(weatherString!=null){
             //有缓存时直接解析天气数据
             Weather weather=Utility.handleWeatherResponse(weatherString);
-
             showWeatherInfo(weather);
         }else{
             //无缓存时去服务器解析数据
@@ -116,48 +122,29 @@ public class WeatherActivity extends BaseActivity {
         }else{
             loadBingPic();
         }
-//        String countyCode=getIntent().getStringExtra("county_code");
-//        String weatherCode=getIntent().getStringExtra("weather_code");
-//        if(!TextUtils.isEmpty(countyCode)){
-//            //有县级代号就去查询天气
-//            publishText.setText("同步中...");
-//            weatherInfoLayout.setVisibility(View.INVISIBLE);
-//            cityNameText.setVisibility(View.INVISIBLE);
-//            queryWeatherCode(countyCode);
-//        }else if(!TextUtils.isEmpty(weatherCode)){
-//            //有天气代号就去查询天气
-//            publishText.setText("同步中...");
-//            weatherInfoLayout.setVisibility(View.INVISIBLE);
-//            cityNameText.setVisibility(View.INVISIBLE);
-//            queryWeatherInfo(weatherCode);
-//        }else{
-//            showWeather();
-//        }
+
     }
 
     private void initUI(){
-//        titlePopup=new TitlePopup(this, ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-//        titlePopup.addAction(new ActionItem(this,R.string.choose));
-//        titlePopup.addAction(new ActionItem(this,R.string.setting));
-//        titlePopup.addAction(new ActionItem(this,R.string.citymanager));
-//        titlePopup.setItemOnClickListener(new TitlePopup.OnItemOnClickListener() {
-//            @Override
-//            public void onItemClick(ActionItem item, int position) {
-//                if(item.mTitle==getText(R.string.choose)){
-//                    Intent switchIntent=new Intent(WeatherActivity.this,ChooseActivity.class);
-//                    switchIntent.putExtra("from_weather_activity",true);
-//                    startActivity(switchIntent);
-//                    finish();
-//                }else if(item.mTitle==getText(R.string.setting)){
-//                    Intent settingIntent=new Intent(WeatherActivity.this,SettingActivity.class);
-//                    startActivity(settingIntent);
-//                }else {
-//                    Intent managerIntent=new Intent(WeatherActivity.this,CityManagerActivity.class);
-//                    startActivity(managerIntent);
-//                }
-//            }
-//        });
-//
+        titlePopup=new TitlePopup(this, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        titlePopup.addAction(new ActionItem(this,R.string.choose));
+        titlePopup.addAction(new ActionItem(this,R.string.setting));
+        titlePopup.addAction(new ActionItem(this,R.string.citymanager));
+        titlePopup.setItemOnClickListener(new TitlePopup.OnItemOnClickListener() {
+            @Override
+            public void onItemClick(ActionItem item, int position) {
+                if(item.mTitle==getText(R.string.choose)){
+                    drawerLayout.openDrawer(GravityCompat.START);
+                }else if(item.mTitle==getText(R.string.setting)){
+                    Intent settingIntent=new Intent(WeatherActivity.this,SettingActivity.class);
+                    startActivity(settingIntent);
+                }else {
+                    Intent managerIntent=new Intent(WeatherActivity.this,CityManagerActivity.class);
+                    startActivity(managerIntent);
+                }
+            }
+        });
+
         weatherLayout=(ScrollView)findViewById(R.id.weather_layout_scrollview);
         titleCity=(TextView)findViewById(R.id.title_city);
         titleUpdateTime=(TextView)findViewById(R.id.title_update_time);
@@ -182,7 +169,7 @@ public class WeatherActivity extends BaseActivity {
         navBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                drawerLayout.openDrawer(GravityCompat.START);
+                titlePopup.show(view);
             }
         });
     }
@@ -220,8 +207,8 @@ public class WeatherActivity extends BaseActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String responseText=response.body().string();
+                Log.i("data","responseText is"+responseText);
                 final Weather weather=Utility.handleWeatherResponse(responseText);
-                Log.i("data","weather.status is "+weather.status);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -246,48 +233,30 @@ public class WeatherActivity extends BaseActivity {
         loadBingPic();
     }
 
-//    private  void queryFromServer(final String address,final String type){
-//        HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
-//            @Override
-//            public void onFinish(String response) {
-//                if("countyCode".equals(type)){
-//                    if(!TextUtils.isEmpty(response)){
-//                        //从返回的额数据中解析出天气代号
-//                        String[] array=response.split("\\|");
-//                        if(array!=null&&array.length==2){
-//                            String weatherCode=array[1];
-//                            queryWeatherInfo(weatherCode);
-//                        }
-//                    }
-//                }else if("weatherCode".equals(type)){
-//                    Log.i("data","处理服务器返回的天气信息");
-//                    //处理服务器返回的天气信息
-//                    Utility.handleWeatherResponse(WeatherActivity.this,response);
-//
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            showWeather();
-//                        }
-//                    });
-//                }
-//            }
-//
-//            @Override
-//            public void onError(Exception e) {
-//                publishText.setText("同步失败");
-//            }
-//        });
-//    }
 
     /**
      * 处理并展示weather实体类中的数据
      */
     private void showWeatherInfo(Weather weather){
-        String cityName=weather.basic.cityName;
-        String updateTime=weather.basic.update.updateTime.split(" ")[1];
-        String degree=weather.now.temperature+"℃";
-        String weatherInfo=weather.now.more.info;
+        String cityName=weather.basic.cityName;//城市名称
+        String updateTime=weather.basic.update.updateTime.split(" ")[1];//更新时间
+        String degree=weather.now.temperature+"℃";//当前温度
+        String weatherInfo=weather.now.more.info;//天气信息
+        String weatherId=weather.basic.weatherId;
+
+        WeatherItem weatherItem=new WeatherItem();
+        weatherItem.setCounty_name(cityName);
+        weatherItem.setTime(updateTime);
+        weatherItem.setTemp(degree);
+        weatherItem.setWeather_desp(weatherInfo);
+        weatherItem.setWeather_code(weatherId);
+        int  i=weatherItem.updateAll("weather_code=?",weatherId);
+        if(i==0){
+
+            weatherItem.save();
+        }
+
+
 
         titleCity.setText(cityName);
         titleUpdateTime.setText(updateTime);
@@ -359,26 +328,17 @@ public class WeatherActivity extends BaseActivity {
 //
 //    }
 
-//    @Override
-//    public void onClick(View view) {
-//        switch(view.getId()){
-//            case R.id.switch_city:
-//                titlePopup.show(view);
-//                break;
-//            case R.id.refresh_weather:
-//                //从sharedPreference里获得weatherCode,然后重新获取刷新天气
-//                publishText.setText(getText(R.string.loading));
-//                SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(this);
-//                String weatherCode=sharedPreferences.getString("weather_code","");
-//                if(!TextUtils.isEmpty(weatherCode)){
-//                    queryWeatherInfo(weatherCode);
-//                }
-//                break;
-//            default:
-//                break;
-//        }
-//
-//    }
+    @Override
+    public void onClick(View view) {
+        switch(view.getId()){
+            case R.id.switch_city:
+                titlePopup.show(view);
+                break;
+            default:
+                break;
+        }
+
+    }
 
     /**
      * 加载每日背景图片
@@ -425,6 +385,8 @@ public class WeatherActivity extends BaseActivity {
                 return true;
             }else{
                 System.exit(0);
+                ActivityCollector.finishAll();
+
             }
         }
         return super.onKeyUp(keyCode, event);

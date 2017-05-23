@@ -50,7 +50,7 @@ public class CityManagerAdapter extends RecyclerView.Adapter {
         MyViewHolder vh=(MyViewHolder)holder;
         vh.cityName.setText(weatherItem.getCounty_name());
         vh.weatherDesp.setText("天气："+weatherItem.getWeather_desp());
-        vh.temp.setText("温度："+weatherItem.getTemp1()+"~"+weatherItem.getTemp2());
+        vh.temp.setText("温度："+weatherItem.getTemp());
         vh.updateTime.setText(weatherItem.getTime());
         vh.weatherCode.setText(weatherItem.getWeather_code());
         switch(position%3) {

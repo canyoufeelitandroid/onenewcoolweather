@@ -15,17 +15,27 @@ import org.litepal.tablemanager.Connector;
  */
 
 public class MyMainActivity extends BaseActivity {
+
+    private boolean isFromWeatherActivity;
+    private SharedPreferences.Editor editor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Connector.getDatabase();
+        isFromWeatherActivity=getIntent().getBooleanExtra("from_weather_activity",false);
+
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main_my);
-        Connector.getDatabase();
         SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(this);
-        if(prefs.getString("weather",null)!=null){
+        editor=PreferenceManager.getDefaultSharedPreferences(this).edit();
+        if(prefs.getString("weather",null)!=null&&!isFromWeatherActivity){
             Intent i=new Intent(MyMainActivity.this,WeatherActivity.class);
             startActivity(i);
             finish();
+        }else{
+            editor.putString("weather",null);
+            editor.apply();
         }
     }
 

@@ -43,7 +43,7 @@ public class ChooseActivity extends Fragment {
     public static final int LEVEL_CITY=1;
     public static final int LEVEL_COUNTY=2;
 
-//    private boolean isFromWeatherActivity;
+
 
     private ProgressDialog progressDialog;
     private TextView titleText;
@@ -95,6 +95,8 @@ public class ChooseActivity extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

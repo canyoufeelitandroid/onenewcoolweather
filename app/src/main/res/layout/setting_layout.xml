@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:weightSum="1">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/titleBackground">
+        android:background="@color/colorPrimary">
 
         <Button
             android:id="@+id/back_before"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@mipmap/back_to_before"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/back_big"
             android:layout_marginLeft="10dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"/>
@@ -22,28 +23,80 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/setting"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textColor="#fff"/>
 
     </RelativeLayout>
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="left|center_vertical"
+            android:text="@string/auto_update"
+            android:layout_marginLeft="20dp"
+            android:textSize="18sp"
+            android:textColor="#000"/>
 
     <Switch
         android:id="@+id/auto_update"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/auto_update"
-        android:textSize="18sp"
-        android:textColor="#000"
-        android:layout_gravity="center_horizontal"/>
 
+        android:gravity="center"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="right|center_horizontal"
+        android:track="@drawable/switch_track"
+        android:thumb="@drawable/switch_thumb"/>
+
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="left|center_vertical"
+            android:text="@string/update_frequency"
+            android:layout_marginLeft="20dp"
+            android:textSize="18sp"
+            android:textColor="#000"/>
     <Spinner
         android:id="@+id/update_hour"
-        android:layout_marginTop="20dp"
-        android:layout_gravity="center_horizontal"
+        android:layout_gravity="right|center_horizontal"
+        android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:entries="@array/spingarr"
+        android:layout_marginRight="20dp"
+        />
+    </FrameLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         />
 
     <Button
@@ -55,6 +108,10 @@
         android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp"
         android:layout_gravity="center_horizontal"
-        android:textSize="18sp"/>
+        android:textSize="18sp"
+        android:background="#0099cc"
+        android:textColor="#fff"/>
+
+
 
 </LinearLayout>
