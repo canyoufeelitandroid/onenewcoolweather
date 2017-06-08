@@ -51,6 +51,7 @@ public class AutoUpdateService extends Service {
                     updateBingPic();
                 }
             }).start();
+
             AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
             long everyTime = SystemClock.elapsedRealtime() +updateHour;
             //long everyTime= SystemClock.elapsedRealtime()+5*1000;

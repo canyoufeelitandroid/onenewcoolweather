@@ -4,6 +4,5 @@
         <item>@string/twohours</item>
         <item>@string/fourhours</item>
         <item>@string/eighthours</item>
-
     </string-array>
 </resources>

@@ -27,6 +27,7 @@ import com.example.weather.coolweather.controls.TitlePopup;
 import com.example.weather.coolweather.model.ActionItem;
 import com.example.weather.coolweather.model.WeatherItem;
 import com.example.weather.coolweather.model.gsonofweather.Forecast;
+import com.example.weather.coolweather.model.gsonofweather.HourlyForecast;
 import com.example.weather.coolweather.model.gsonofweather.Weather;
 import com.example.weather.coolweather.service.AutoUpdateService;
 import com.example.weather.coolweather.util.HttpUtil;
@@ -65,12 +66,18 @@ public class WeatherActivity extends BaseActivity implements View.OnClickListene
     private TextView titleUpdateTime;
     private TextView degreeText;
     private TextView weatherInfoText;
+    private LinearLayout hourlyForecastLayout;
     private LinearLayout forecastLayout;
+    private TextView airText;
     private TextView aqiText;
     private TextView pm25Text;
     private TextView comfortText;
     private TextView carWashText;
     private TextView sportText;
+    private TextView dressText;
+    private TextView coldText;
+    private TextView travelText;
+    private TextView uvText;
 
     private ImageView picImg;
     public SwipeRefreshLayout swipeRefresh;
@@ -138,9 +145,12 @@ public class WeatherActivity extends BaseActivity implements View.OnClickListene
                 }else if(item.mTitle==getText(R.string.setting)){
                     Intent settingIntent=new Intent(WeatherActivity.this,SettingActivity.class);
                     startActivity(settingIntent);
+                    overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+
                 }else {
                     Intent managerIntent=new Intent(WeatherActivity.this,CityManagerActivity.class);
                     startActivity(managerIntent);
+                    overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
                 }
             }
         });
@@ -150,12 +160,18 @@ public class WeatherActivity extends BaseActivity implements View.OnClickListene
         titleUpdateTime=(TextView)findViewById(R.id.title_update_time);
         degreeText=(TextView)findViewById(R.id.degree_text);
         weatherInfoText=(TextView)findViewById(R.id.weather_info_text);
+        hourlyForecastLayout=(LinearLayout)findViewById(R.id.hourly_forecast_layout);
         forecastLayout=(LinearLayout) findViewById(R.id.forecast_layout);
+        airText=(TextView)findViewById(R.id.air_quality);
         aqiText=(TextView)findViewById(R.id.aqi_text);
         pm25Text=(TextView) findViewById(R.id.pm25_text);
         comfortText=(TextView) findViewById(R.id.comfort_text);
         carWashText=(TextView) findViewById(R.id.car_wash_text);
         sportText=(TextView)findViewById(R.id.sport_text);
+        dressText=(TextView)findViewById(R.id.dress_text);
+        coldText=(TextView)findViewById(R.id.cold_text);
+        travelText=(TextView)findViewById(R.id.travel_text);
+        uvText=(TextView)findViewById(R.id.uv_text);
 
         picImg=(ImageView)findViewById(R.id.pic_img);
         //下拉刷新
@@ -250,9 +266,10 @@ public class WeatherActivity extends BaseActivity implements View.OnClickListene
         weatherItem.setTemp(degree);
         weatherItem.setWeather_desp(weatherInfo);
         weatherItem.setWeather_code(weatherId);
+        //首先进行更新操作
         int  i=weatherItem.updateAll("weather_code=?",weatherId);
+        //若该数据为第一次存储，则存储操作
         if(i==0){
-
             weatherItem.save();
         }
 
@@ -262,13 +279,28 @@ public class WeatherActivity extends BaseActivity implements View.OnClickListene
         titleUpdateTime.setText(updateTime);
         degreeText.setText(degree);
         weatherInfoText.setText(weatherInfo);
+        //未来几个小时的天气预报
+        hourlyForecastLayout.removeAllViews();
+        for(HourlyForecast hourlyForecast:weather.hourlyForecastList){
+            View view=LayoutInflater.from(this).
+                    inflate(R.layout.hourly_forecast_item,hourlyForecastLayout,false);
+            TextView hourText=(TextView)view.findViewById(R.id.hour_text);
+            TextView hourInfoText=(TextView)view.findViewById(R.id.hour_info_text);
+            TextView tmpText=(TextView)view.findViewById(R.id.hourly_tmp_text);
 
+            String hourlyDate=hourlyForecast.date.substring(10);
+            hourText.setText(hourlyDate);
+            hourInfoText.setText(hourlyForecast.more.more);
+            tmpText.setText(hourlyForecast.tmp+"℃");
+            hourlyForecastLayout.addView(view);
+        }
+       //未来几日的天气预报
         forecastLayout.removeAllViews();
         for(Forecast forecast:weather.forecastList){
             View view= LayoutInflater.from(this).
                     inflate(R.layout.forecast_item,forecastLayout,false);
             TextView dateText=(TextView)view.findViewById(R.id.date_text);
-            TextView infoText=(TextView)view.findViewById(R.id.info_text);
+            TextView infoText=(TextView)view.findViewById(R.id.daily_info_text);
             TextView maxText=(TextView)view.findViewById(R.id.max_text);
             TextView minText=(TextView)view.findViewById(R.id.min_text);
             dateText.setText(forecast.date);
@@ -280,14 +312,23 @@ public class WeatherActivity extends BaseActivity implements View.OnClickListene
             if(weather.aqi!=null){
                 aqiText.setText(weather.aqi.city.aqi);
                 pm25Text.setText(weather.aqi.city.pm25);
+                airText.setText(weather.aqi.city.airQuality);
             }
 
             String comfort="舒适度："+weather.suggestion.comfort.info;
             String carWash="洗车指数："+weather.suggestion.carWash.info;
-            String sport="运动建议"+weather.suggestion.sport.info;
+            String sport="运动建议："+weather.suggestion.sport.info;
+            String dress="穿衣建议："+weather.suggestion.dress.info;
+            String cold="感冒指数："+weather.suggestion.cold.info;
+            String travel="出游建议："+weather.suggestion.travel.info;
+            String uv="紫外线指数："+weather.suggestion.ultraviolet.info;
             comfortText.setText(comfort);
             carWashText.setText(carWash);
             sportText.setText(sport);
+            dressText.setText(dress);
+            coldText.setText(cold);
+            travelText.setText(travel);
+            uvText.setText(uv);
             weatherLayout.setVisibility(View.VISIBLE);
 
 
@@ -295,9 +336,7 @@ public class WeatherActivity extends BaseActivity implements View.OnClickListene
 //        String desp_weather=prefs.getString("weather_desp","");
 //        showBackground(desp_weather);
 
-        //启动服务，用于后台自动更新天气信息
-//        Intent serviceIntent=new Intent(this, AutoUpdateService.class);
-//        startService(serviceIntent);
+
     }
 
     /**
@@ -384,7 +423,8 @@ public class WeatherActivity extends BaseActivity implements View.OnClickListene
                 firstTime=secondTime;
                 return true;
             }else{
-                System.exit(0);
+                finish();
+                //System.exit(0);
                 ActivityCollector.finishAll();
 
             }

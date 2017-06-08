@@ -23,4 +23,9 @@
         <item name="android:switchMinWidth">200dp</item>
     </style>
 
+    <style name="myDropTheme" parent="Widget.AppCompat.Spinner">
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
 </resources>

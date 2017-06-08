@@ -52,6 +52,7 @@ public class CityManagerActivity extends BaseActivity implements View.OnClickLis
                 editor.putString("weather",null);
                 editor.apply();
                 startActivity(weatherIntent);
+                finish();
             }
 
             @Override
@@ -93,6 +94,7 @@ public class CityManagerActivity extends BaseActivity implements View.OnClickLis
                 Intent intent=new Intent(CityManagerActivity.this,MyMainActivity.class);
                 intent.putExtra("from_weather_activity",true);
                 startActivity(intent);
+                finish();
                 break;
             case R.id.back_before_1:
                 finish();

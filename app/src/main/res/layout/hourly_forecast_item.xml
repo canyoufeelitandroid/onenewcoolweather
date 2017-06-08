@@ -3,10 +3,9 @@
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="15dp">
-    <!--this is new layout about some forecast weather-->
 
     <TextView
-        android:id="@+id/date_text"
+        android:id="@+id/hour_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2"
@@ -14,7 +13,7 @@
         android:textColor="#fff"/>
 
     <TextView
-        android:id="@+id/daily_info_text"
+        android:id="@+id/hour_info_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -23,16 +22,7 @@
         android:gravity="center"/>
 
     <TextView
-        android:id="@+id/max_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textColor="#fff"
-        android:layout_gravity="center"
-        android:gravity="right"/>
-
-    <TextView
-        android:id="@+id/min_text"
+        android:id="@+id/hourly_tmp_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"

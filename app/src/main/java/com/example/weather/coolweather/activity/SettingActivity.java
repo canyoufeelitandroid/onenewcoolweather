@@ -54,6 +54,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
     private void initUI(){
         aSwitch=(Switch)findViewById(R.id.auto_update);
         spinner=(Spinner)findViewById(R.id.update_hour);
+        spinner.setDropDownVerticalOffset(55);
         exitBtn=(Button)findViewById(R.id.exit);
         backBtn=(Button)findViewById(R.id.back_before);
         aSwitch.setChecked(autoUpdate);
