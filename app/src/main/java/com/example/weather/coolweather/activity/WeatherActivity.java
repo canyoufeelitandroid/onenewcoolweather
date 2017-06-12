@@ -44,18 +44,7 @@ import okhttp3.Response;
  */
 
 public class WeatherActivity extends BaseActivity implements View.OnClickListener{
-//    private LinearLayout weatherInfoLayout;
-//    private RelativeLayout weatherLayout;
-//
-//    private TextView cityNameText;
-//    private TextView publishText;
-//    private TextView weatherDespText;
-//    private TextView temp1Text;
-//    private TextView temp2Text;
-//    private TextView currentDataText;
-//    private Button switchCityBtn;
-//    private Button refreshWeatherBtn;
-//
+
 //    //自定义下拉菜单初始化
     private TitlePopup titlePopup;
     //记录第一次按下返回的时间（毫秒）
@@ -188,17 +177,10 @@ public class WeatherActivity extends BaseActivity implements View.OnClickListene
                 titlePopup.show(view);
             }
         });
+
+
     }
 
-//    private void queryWeatherCode(String countyCode){
-//        String address="http://www.weather.com.cn/data/list3/city"+countyCode+".xml";
-//        queryFromServer(address,"countyCode");
-//    }
-//
-//    private void queryWeatherInfo(String weatherCode){
-//        String address="http://www.weather.com.cn/data/cityinfo/"+weatherCode+".html";
-//        queryFromServer(address,"weatherCode");
-//    }
 
     /**
      * 根据天气ID查询对应的天气信息
@@ -260,6 +242,7 @@ public class WeatherActivity extends BaseActivity implements View.OnClickListene
         String weatherInfo=weather.now.more.info;//天气信息
         String weatherId=weather.basic.weatherId;
 
+        //用于城市管理界面中，已收藏城市的部分数据存储
         WeatherItem weatherItem=new WeatherItem();
         weatherItem.setCounty_name(cityName);
         weatherItem.setTime(updateTime);
@@ -272,8 +255,6 @@ public class WeatherActivity extends BaseActivity implements View.OnClickListene
         if(i==0){
             weatherItem.save();
         }
-
-
 
         titleCity.setText(cityName);
         titleUpdateTime.setText(updateTime);
@@ -331,13 +312,10 @@ public class WeatherActivity extends BaseActivity implements View.OnClickListene
             uvText.setText(uv);
             weatherLayout.setVisibility(View.VISIBLE);
 
-
-
 //        String desp_weather=prefs.getString("weather_desp","");
 //        showBackground(desp_weather);
-
-
     }
+
 
     /**
      * 根据天气设置不同的背景图
@@ -424,7 +402,6 @@ public class WeatherActivity extends BaseActivity implements View.OnClickListene
                 return true;
             }else{
                 finish();
-                //System.exit(0);
                 ActivityCollector.finishAll();
 
             }

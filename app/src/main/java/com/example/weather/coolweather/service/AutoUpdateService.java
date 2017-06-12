@@ -1,6 +1,7 @@
 package com.example.weather.coolweather.service;
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -8,8 +9,11 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.RemoteViews;
 
+import com.example.weather.coolweather.R;
 import com.example.weather.coolweather.model.gsonofweather.Weather;
 import com.example.weather.coolweather.receiver.AutoUpdateReceiver;
 import com.example.weather.coolweather.util.HttpUtil;
@@ -52,12 +56,46 @@ public class AutoUpdateService extends Service {
                 }
             }).start();
 
+           NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
+            builder.setContentTitle("Notification");
+            //builder.setContentText("自定义通知栏示例");
+            builder.setSmallIcon(R.mipmap.ic_launcher);
+            //Notification noti=new Notification(R.drawable.cloudy,"Cool",SystemClock.currentThreadTimeMillis());
+            //noti.flags = Notification.FLAG_INSISTENT;
+            RemoteViews remoteView=new RemoteViews(this.getPackageName(), R.layout.front_server);
+            //remoteView.setImageViewResource(R.id.front_pic,R.drawable.cloudy);
+            remoteView.setTextViewText(R.id.front_city_name,"成都");
+            remoteView.setTextViewText(R.id.front_city_weather,"晴转多云");
+            remoteView.setTextViewText(R.id.front_city_temp,"24℃");
+            remoteView.setTextViewText(R.id.front_city_time,"更新时间：19：10");
+            //noti.contentView=remoteView;
+            builder.setContent(remoteView);
+
+
+
+
+
             AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
             long everyTime = SystemClock.elapsedRealtime() +updateHour;
             //long everyTime= SystemClock.elapsedRealtime()+5*1000;
             Intent i = new Intent(this, AutoUpdateReceiver.class);
             PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, 0);
             manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, everyTime, pi);
+
+//            NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+//            builder.setSmallIcon(R.drawable.add);
+//            builder.setContentTitle("前台服务");
+//            builder.setContentText("这是前台服务");
+//            builder.setContentIntent(pi);
+//            Notification notification = builder.build();
+//           //启动到前台
+//            startForeground(1, notification);
+            builder.setContentIntent(pi);
+            Notification notification = builder.build();
+            startForeground(1,notification);
+
+
         }
         return super.onStartCommand(intent, flags, startId);
     }
